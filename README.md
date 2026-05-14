@@ -1,98 +1,240 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Heroes App — Backend 🛡️
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+RESTful API for managing superheroes and villains, built with NestJS 11 and TypeScript. Provides CRUD operations, paginated listings, dashboard summaries, and advanced multi-filter search — all consumed by the [Heroes App frontend](https://github.com/lgabriel97/heroes-app-frontend).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+🔗 **API Base URL:** `https://heroes-app-backend-y9rd.onrender.com/api`
+🌐 **Frontend Demo:** [heroes-app.netlify.app](https://deft-truffle-8f9465.netlify.app/)
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Screenshots
 
-## Project setup
+| Heroes Summary | Hero Details |
+| --- | --- |
+| ![Heroes Summary](./docs/screenshot-api-list.png) | ![Hero Detail](./docs/screenshot-api-detail.png) |
 
-```bash
-$ npm install
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Framework | [NestJS 11](https://nestjs.com/) |
+| Language | [TypeScript 5](https://www.typescriptlang.org/) |
+| Validation | [class-validator](https://github.com/typestack/class-validator) + [class-transformer](https://github.com/typestack/class-transformer) |
+| ID Generation | [uuid](https://github.com/uuidjs/uuid) |
+| Static Files | [@nestjs/serve-static](https://docs.nestjs.com/recipes/serve-static) |
+| Testing | [Jest](https://jestjs.io/) + [Supertest](https://github.com/ladakh/supertest) |
+| Hosting | [Render](https://render.com/) |
+
+---
+
+## API Endpoints
+
+All endpoints are prefixed with `/api`. CORS is enabled globally.
+
+### Heroes CRUD
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/heroes` | List all heroes (paginated) |
+| `GET` | `/api/heroes/summary` | Dashboard summary (totals, strongest, smartest) |
+| `GET` | `/api/heroes/search` | Advanced search with multiple filters |
+| `GET` | `/api/heroes/:id` | Get a hero by ID or slug |
+| `POST` | `/api/heroes` | Create a new hero |
+| `PATCH` | `/api/heroes/:id` | Update a hero |
+| `DELETE` | `/api/heroes/:id` | Delete a hero |
+
+### Query Parameters
+
+**`GET /api/heroes`** — Paginated listing:
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| `limit` | number | `6` | Items per page |
+| `offset` | number | `0` | Number of items to skip |
+| `category` | string | `all` | Filter by category (`Hero`, `Villain`, or `all`) |
+
+**`GET /api/heroes/search`** — Advanced search (at least one param required):
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `name` | string | Search by name or alias (partial match) |
+| `team` | string | Filter by team |
+| `category` | string | Filter by category |
+| `universe` | string | Filter by universe |
+| `status` | string | Filter by status |
+| `strength` | number | Minimum strength value |
+
+### Hero Entity
+
+```json
+{
+  "id": "1",
+  "name": "Spider-Man",
+  "slug": "spider-man",
+  "alias": "Peter Parker",
+  "powers": ["Wall-Crawling", "Spider-Sense", "Web-Shooting"],
+  "description": "...",
+  "strength": 70,
+  "intelligence": 85,
+  "speed": 80,
+  "durability": 75,
+  "team": "Avengers",
+  "image": "https://...",
+  "firstAppearance": "Amazing Fantasy #15",
+  "status": "Active",
+  "category": "Hero",
+  "universe": "Marvel"
+}
 ```
 
-## Compile and run the project
+### Response Examples
 
-```bash
-# development
-$ npm run start
+**`GET /api/heroes?limit=2`**
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```json
+{
+  "total": 30,
+  "pages": 15,
+  "heroes": [
+    { "id": "1", "name": "Spider-Man", "slug": "spider-man", "..." },
+    { "id": "2", "name": "Batman", "slug": "batman", "..." }
+  ]
+}
 ```
 
-## Run tests
+**`GET /api/heroes/summary`**
+
+```json
+{
+  "totalHeroes": 30,
+  "strongestHero": { "name": "...", "strength": 100, "..." },
+  "smartestHero": { "name": "...", "intelligence": 100, "..." },
+  "heroCount": 18,
+  "villainCount": 12
+}
+```
+
+---
+
+## Validation
+
+The API uses `ValidationPipe` globally with:
+
+- **whitelist** — strips unknown properties from the request body
+- **forbidNonWhitelisted** — rejects requests with unknown properties
+- **transform** — auto-transforms query params to their declared types (implicit conversion enabled)
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js >= 18
+- npm >= 9
+
+### Installation
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone https://github.com/lgabriel97/heroes-app-backend.git
+cd heroes-app-backend
+npm install
 ```
+
+### Run in development
+
+```bash
+npm run start:dev
+```
+
+The API will be available at `http://localhost:3000/api`.
+
+### Build and run for production
+
+```bash
+npm run build
+npm run start:prod
+```
+
+### Run tests
+
+```bash
+npm run test          # Unit tests
+npm run test:e2e      # End-to-end tests
+npm run test:cov      # Test coverage
+```
+
+---
+
+## Project Structure
+
+```
+src/
+├── common/
+│   └── dto/
+│       └── pagination.dto.ts         # Reusable pagination DTO (limit, offset, category)
+├── data/
+│   └── heroes.data.ts                # Pre-loaded heroes dataset
+├── heroes/
+│   ├── dto/
+│   │   ├── create-hero.dto.ts        # Validated create payload (all fields required)
+│   │   ├── update-hero.dto.ts        # Partial update (PartialType of CreateHeroDto)
+│   │   └── advande-search.dto.ts     # Advanced search filters (all optional)
+│   ├── entities/
+│   │   └── hero.entity.ts            # Hero type definition (16 fields)
+│   ├── heroes.controller.ts          # 7 route handlers
+│   ├── heroes.module.ts              # Module declaration
+│   └── heroes.service.ts             # Business logic (CRUD + search + summary)
+├── app.module.ts                     # Root module (ServeStatic + HeroesModule)
+└── main.ts                           # Bootstrap, CORS, global prefix /api, ValidationPipe
+```
+
+---
 
 ## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+The API is deployed on **Render** (free tier) with automatic deploys from `main`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| Setting | Value |
+| --- | --- |
+| Build Command | `npm install && npm run build` |
+| Start Command | `npm run start:prod` |
+| Port | `process.env.PORT` (auto-assigned by Render) |
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+> **Note:** On Render's free tier, the service sleeps after 15 minutes of inactivity. The first request after sleeping takes ~30 seconds. Data is stored in-memory and resets on each restart.
+
+---
+
+## Architecture
+
+```
+┌─────────────────┐        HTTP        ┌──────────────────────┐
+│                 │  ───────────────►  │                      │
+│   React SPA     │   GET/POST/PATCH   │   NestJS REST API    │
+│   (Netlify)     │   DELETE /api/*    │   (Render)           │
+│                 │  ◄───────────────  │                      │
+└─────────────────┘        JSON        └──────────┬───────────┘
+                                                  │
+                                                  ▼
+                                          ┌──────────────┐
+                                          │  In-Memory   │
+                                          │  Data Store  │
+                                          │  (heroes.    │
+                                          │   data.ts)   │
+                                          └──────────────┘
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## Related
 
-Check out a few resources that may come in handy when working with NestJS:
+- [heroes-app-frontend](https://github.com/lgabriel97/heroes-app-frontend) — React 19 SPA that consumes this API
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is unlicensed — feel free to use it as reference.
